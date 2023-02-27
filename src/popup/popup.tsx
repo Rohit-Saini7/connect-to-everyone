@@ -16,11 +16,11 @@ const Popup = () => {
 
   /* Function for response from ContentScript. */
   const resFromExt = (res: { type: string; response: any }) => {
-    const { message } = chrome.runtime.lastError;
-    !!message &&
-      message ===
+    const error = chrome.runtime.lastError;
+    !!error.message &&
+      error.message ===
         'Could not establish connection. Receiving end does not exist.' &&
-      setError(message);
+      setError(error.message);
 
     !!res?.type
       ? res.type === 'TOTALBUTTONS'
