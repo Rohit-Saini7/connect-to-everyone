@@ -77,6 +77,7 @@ const startConnecting = () => {
       connectButtons[connectDone].focus();
       connectButtons[connectDone].click();
       clickSendButton();
+      clickSendButton();
 
       connectDone += 1;
       delay = Math.floor((Math.random() * 5000) + 5000);
