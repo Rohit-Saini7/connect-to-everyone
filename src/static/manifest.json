@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Connect To Everyone",
+  "description": "Chrome extension for pressing connect button on Linkedin",
+  "version": "1.0.0",
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Start Connecting...",
+    "default_icon": "logo.png"
+  },
+  "icons": {
+    "16": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://*.linkedin.com/*"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "permissions": ["storage", "tabs"]
+}
