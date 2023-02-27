@@ -5,6 +5,7 @@ import './popup.css';
 const Popup = () => {
   /* All variables as states */
   const [tabs, setTabs] = useState<object>({});
+  const [error, setError] = useState('');
   const [action, setAction] = useState('START');
   const [totalConnects, setTotalConnects] = useState(0);
   const [connectsLeft, setConnectsLeft] = useState(0);
@@ -14,19 +15,33 @@ const Popup = () => {
   let interval: NodeJS.Timer;
 
   /* Function for response from ContentScript. */
-  const resFromExt = ({ type, response }) => {
-    type === 'TOTALBUTTONS' ? setTotalConnects(response) : setAction(response);
+  const resFromExt = (res: { type: string; response: any }) => {
+    const { message } = chrome.runtime.lastError;
+    !!message &&
+      message ===
+        'Could not establish connection. Receiving end does not exist.' &&
+      setError(message);
+
+    !!res?.type
+      ? res.type === 'TOTALBUTTONS'
+        ? setTotalConnects(res.response)
+        : setAction(res.response)
+      : console.log('it doesnt work like that');
   };
 
   /* Gets active tab ID and send message to contentScript to get buttons */
   useEffect(() => {
-    chrome?.tabs &&
-      chrome?.tabs?.query(
+    console.log(chrome.tabs);
+
+    chrome.tabs &&
+      chrome.tabs.query(
         {
           active: true,
           currentWindow: true,
         },
         (tabs) => {
+          console.log(tabs);
+
           setTabs(tabs);
           chrome.tabs.sendMessage(tabs[0].id, 'GETBUTTONS', resFromExt);
         }
@@ -67,6 +82,17 @@ const Popup = () => {
 
   return (
     <React.Fragment>
+      {!!error && (
+        <Error
+          title='Click to dismiss...'
+          onClick={() => {
+            console.log(error);
+            setError('');
+          }}
+        >
+          Extension only works on "https://*.linkedin.com/*"
+        </Error>
+      )}
       <Nav>
         <Heading>Start Connecting...</Heading>
       </Nav>
@@ -98,6 +124,22 @@ const Popup = () => {
 export default Popup;
 
 /* Custom Styped Components */
+
+const Error = styled.div`
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  color: rgba(255, 89, 89);
+  font-size: 1.2rem;
+  z-index: 10;
+  backdrop-filter: blur(7px);
+  font-weight: 700;
+`;
+
 const Nav = styled.header`
   display: flex;
   justify-content: center;

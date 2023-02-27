@@ -5,12 +5,12 @@ let interval: NodeJS.Timer;
 
 
 /* Function to SEND message to Extension */
-const sendMsgToExt = (msgType: any, msg: any) => {
+const sendMsgToExt = (msgType: string, msg: number | string) => {
   chrome.runtime.sendMessage({ msgType, msg });
 }
 
 /* Function to RECIEVE message from Extension */
-const msgFromExt = (action: any, sendRes: any) => {
+const msgFromExt = (action: string, sendRes: (type: string, response: any) => void) => {
   switch (action) {
     case "GETBUTTONS":
     case "STOP":
@@ -74,6 +74,7 @@ const startConnecting = () => {
   /* To click on all buttons after some delay. */
   interval = setInterval(() => {
     if (connectDone < connectButtons.length) {
+      connectButtons[connectDone].focus();
       connectButtons[connectDone].click();
       clickSendButton();
 
